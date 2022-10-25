@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="d8c4ec16-3d42-4847-84a7-a3d4b78f8601" name="tianxing">
+        <fileTransfer rootFolder="/home/gridsan/tianxing/txml_shared/tianle/metricnlg_2205/" accessType="SFTP" host="txe1-login3.mit.edu" port="22" sshConfigId="a233df8e-941b-467b-a56f-3d73710acb2c" sshConfig="tianxing@txe1-login3.mit.edu:22 agent" authAgent="true">
+          <advancedOptions>
+            <advancedOptions controlEncoding="UTF-8" dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
