@@ -64,10 +64,10 @@ class Attacker:
         ###################### model and tokenizer ############################
         #MNLI_BERT = 'https://github.com/AIPHES/emnlp19-moverscore/releases/download/0.6/MNLI_BERT.zip'
         model_type = "roberta-large" # default
-        self.tokenizer = AutoTokenizer.from_pretrained(model_type, use_fast=False, do_lower_case=True)
-        self.model = AutoModel.from_pretrained(model_type)
+        self.tokenizer = AutoTokenizer.from_pretrained("./models/roberta", use_fast=False, do_lower_case=True)
+        self.model = AutoModel.from_pretrained("./models/roberta")
         self.model.eval()
-        self.embedding = self.model.embeddings.word_embeddings.weight.detach().numpy()
+        self.embedding = self.model.embeddings.word_embeddings.weight
 
 
     def replace(self, w):
@@ -76,9 +76,9 @@ class Attacker:
             return self.cache[w]
         w_id = self.tokenizer._convert_token_to_id(w)
         w_embed = self.embedding[w_id]
-        dis = np.linalg.norm(self.embedding - w_embed, ord=2, axis=1)
-        index = np.argsort(dis)[1]
-        min_dis = np.sort(dis)[1]
+        dis = torch.linalg.norm(self.embedding - w_embed, ord=2, axis=1)
+        index = torch.argsort(dis)[1].item()
+        min_dis = torch.sort(dis)[1].item()
         new_w = self.tokenizer._convert_id_to_token(index)
         self.cache[w] = (new_w, min_dis)
         return new_w, min_dis
@@ -146,7 +146,7 @@ class Attacker:
                 edit_d += editdistance.eval(new_line.split(), line.split())
                 ori_len += len(line.split())
             edit_ratio = edit_d * 1.0 / ori_len
-            logger.info('edit_ratio', edit_ratio)
+            logger.info('edit_ratio %s', edit_ratio)
 
 
     def save_file(self):
