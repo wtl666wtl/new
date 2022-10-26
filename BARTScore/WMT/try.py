@@ -213,14 +213,15 @@ def main():
     parser.add_argument('--output', type=str, default="wmt21/de-en.allsys.new.save",
                         help='The output path to save the calculated scores.')
     parser.add_argument('--ratio', type=float, default=0.1,
-                        help='The ratio of the words in ref-A need to be modified.')
+                        help='The ratio of the tokens in ref-A need to be modified.')
+    parser.add_argument('--method', default="initial")
 
     args = parser.parse_args()
     assert 0 <= args.ratio <= 1.0
 
     attack = Attacker(args, args.ratio, args.file, args.output, args.device)
-    attack.work("sort")
-    attack.work("initial")
+    attack.work(args.method)
+    #attack.work("initial")
     #attack.work("initialsentence")
     attack.save_file()
 

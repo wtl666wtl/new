@@ -87,7 +87,11 @@ class Scorer:
                 sys_names.append(sn)
         self.sys_names = sys_names
 
-        self.sys_names = ['ref-A', 'initial', 'sort']  # if you want to run all systems, comment out this line
+        self.sys_names = ['ref-A']  # if you want to run all systems, comment out this line
+        if 'initial' in sys_names:
+            self.sys_names.append('initial')
+        if 'sort' in sys_names:
+            self.sys_names.append('sort')
         transform_d = {'refs': self.refs, 'src': self.srcs}
         if args.hypo_transform is not None:
             for hypo_transform in args.hypo_transform.split(','):
