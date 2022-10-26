@@ -77,8 +77,9 @@ class Attacker:
         w_id = self.tokenizer._convert_token_to_id(w)
         w_embed = self.embedding[w_id]
         dis = torch.linalg.norm(self.embedding - w_embed, ord=2, axis=1)
-        index = torch.argsort(dis)[1].item()
-        min_dis = torch.sort(dis)[1].item()
+        dis, indice = torch.sort(dis)
+        index = indice[1].item()
+        min_dis = dis[1].item()
         new_w = self.tokenizer._convert_id_to_token(index)
         self.cache[w] = (new_w, min_dis)
         return new_w, min_dis
@@ -102,6 +103,41 @@ class Attacker:
                 continue
             new_token, _ = self.replace(tokenized_text[id])
             tokenized_text[id] = new_token
+        new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
+        return new_line
+
+    def initialsentence_modify(self, line):
+        tokenized_text = self.tokenizer._tokenize(line)
+        length = len(tokenized_text)
+        # random (maybe we can add some strategies)
+        import math
+        num = int(math.ceil(self.ratio * length))
+        if num == 0:
+            return line
+        arr = np.array(list(range(length)))
+        #arr = random.permutation(arr)
+        # search and change
+        start = [0]
+        for i in range(length):
+            if self.tokenizer.encoder.get('.') == tokenized_text[i] and i != length-1:
+                start.append(i+1)
+        cnt = 0
+        tot = 0
+        index = 0
+        while tot < num:
+            tot += 1
+            id = start[index] + cnt
+            index += 1
+            if index == len(start):
+                index = 0
+                cnt += 1
+
+            if self.tokenizer.encoder.get(self.tokenizer.unk_token) == tokenized_text[id]:
+                num += 1
+                continue
+            new_token, _ = self.replace(tokenized_text[id])
+            tokenized_text[id] = new_token
+
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
         return new_line
 
