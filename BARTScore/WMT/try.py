@@ -64,8 +64,8 @@ class Attacker:
         ###################### model and tokenizer ############################
         #MNLI_BERT = 'https://github.com/AIPHES/emnlp19-moverscore/releases/download/0.6/MNLI_BERT.zip'
         model_type = "roberta-large" # default
-        self.tokenizer = AutoTokenizer.from_pretrained("./models/roberta", use_fast=False, do_lower_case=True)
-        self.model = AutoModel.from_pretrained("./models/roberta")
+        self.tokenizer = AutoTokenizer.from_pretrained("./roberta-large", use_fast=False, do_lower_case=True)
+        self.model = AutoModel.from_pretrained("./roberta-large")
         self.model.eval()
         self.embedding = self.model.embeddings.word_embeddings.weight
 
