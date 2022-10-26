@@ -90,18 +90,31 @@ class Attacker:
         length = len(tokenized_text)
         # random (maybe we can add some strategies)
         import math
-        num = int(math.ceil(self.ratio * length))
+        num = int(round(self.ratio * length))
         if num == 0:
             return line
         arr = np.array(list(range(length)))
         #arr = random.permutation(arr)
         # search and change
+
+        Q = []
+        for i in range(length):
+            if self.tokenizer.encoder.get(self.tokenizer.unk_token) == tokenized_text[i]:
+                continue
+            new_token, dis = self.replace(tokenized_text[i])
+            Q.append((dis, i, new_token))
+        Q.sort()
+        medium_dis, _, _ = Q[length // 2]
+
+        min_dis = 1000000000
         for i in range(num):
             id = arr[i]
             if self.tokenizer.encoder.get(self.tokenizer.unk_token) == tokenized_text[id]:
                 num += 1
                 continue
             new_token, _ = self.replace(tokenized_text[id])
+            if _ >= medium_dis:
+                continue
             tokenized_text[id] = new_token
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
         return new_line
@@ -111,7 +124,7 @@ class Attacker:
         length = len(tokenized_text)
         # random (maybe we can add some strategies)
         import math
-        num = int(math.ceil(self.ratio * length))
+        num = int(round(self.ratio * length))
         if num == 0:
             return line
         arr = np.array(list(range(length)))
@@ -208,7 +221,7 @@ def main():
     attack = Attacker(args, args.ratio, args.file, args.output, args.device)
     attack.work("sort")
     attack.work("initial")
-    attack.work("initialsentence")
+    #attack.work("initialsentence")
     attack.save_file()
 
 if __name__ == '__main__':
