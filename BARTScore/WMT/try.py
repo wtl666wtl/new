@@ -90,7 +90,7 @@ class Attacker:
         length = len(tokenized_text)
         # random (maybe we can add some strategies)
         import math
-        num = int(round(self.ratio * length))
+        num = int(math.ceil(self.ratio * length))
         if num == 0:
             return line
         arr = np.array(list(range(length)))
@@ -106,7 +106,6 @@ class Attacker:
         Q.sort()
         medium_dis, _, _ = Q[length // 2]
 
-        min_dis = 1000000000
         for i in range(num):
             id = arr[i]
             if self.tokenizer.encoder.get(self.tokenizer.unk_token) == tokenized_text[id]:
