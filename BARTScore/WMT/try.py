@@ -90,7 +90,7 @@ class Attacker:
         length = len(tokenized_text)
         # random (maybe we can add some strategies)
         import math
-        num = int(math.ceil(self.ratio * length))
+        num = int(round(self.ratio * length))
         if num == 0:
             return line
         arr = np.array(list(range(length)))
@@ -114,6 +114,7 @@ class Attacker:
                 continue
             new_token, _ = self.replace(tokenized_text[id])
             if _ >= medium_dis:
+                num += 1
                 continue
             tokenized_text[id] = new_token
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
