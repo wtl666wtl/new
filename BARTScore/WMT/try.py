@@ -90,7 +90,7 @@ class Attacker:
         length = len(tokenized_text)
         # random (maybe we can add some strategies)
         import math
-        num = int(round(self.ratio * length))
+        num = int(math.ceil(self.ratio * length))
         if num == 0:
             return line
         arr = np.array(list(range(length)))
@@ -158,7 +158,7 @@ class Attacker:
         tokenized_text = self.tokenizer._tokenize(line)
         length = len(tokenized_text)
         import math
-        num = int(math.ceil(self.ratio * length))
+        num = int(round(self.ratio * length))
         if num == 0:
             return line
         # sort and change
