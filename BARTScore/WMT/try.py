@@ -172,6 +172,8 @@ class Attacker:
             for line in sys_lines:
                 if func == "sort":
                     new_line = self.sort_modify(line)
+                elif func == "initialsentence":
+                    new_line = self.initialsentence_modify(line)
                 else:
                     new_line = self.random_modify(line)
                 if flag < 5:
@@ -206,6 +208,7 @@ def main():
     attack = Attacker(args, args.ratio, args.file, args.output, args.device)
     attack.work("sort")
     attack.work("initial")
+    attack.work("initialsentence")
     attack.save_file()
 
 if __name__ == '__main__':
