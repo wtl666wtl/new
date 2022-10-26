@@ -185,7 +185,7 @@ class Attacker:
             for line in sys_lines:
                 if func == "sort":
                     new_line = self.sort_modify(line)
-                elif func == "initialsentence":
+                elif func == "initial":
                     new_line = self.initialsentence_modify(line)
                 else:
                     new_line = self.random_modify(line)
