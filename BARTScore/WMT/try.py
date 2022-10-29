@@ -33,6 +33,7 @@ class Attacker:
         self.ratio = ratio
         self.device = device
         self.outfile = outfile
+        self.filter = args.filter
 
         self.cache = {}
 
@@ -81,6 +82,10 @@ class Attacker:
         index = indice[1].item()
         min_dis = dis[1].item()
         new_w = self.tokenizer._convert_id_to_token(index)
+        if self.filter and new_w.lower() == w.lower():
+            index = indice[2].item()
+            min_dis = dis[2].item()
+            new_w = self.tokenizer._convert_id_to_token(index)
         self.cache[w] = (new_w, min_dis)
         return new_w, min_dis
 
@@ -214,15 +219,14 @@ def main():
                         help='The output path to save the calculated scores.')
     parser.add_argument('--ratio', type=float, default=0.1,
                         help='The ratio of the tokens in ref-A need to be modified.')
-    parser.add_argument('--method', default="initial")
+    parser.add_argument('--method', default="sort")
+    parser.add_argument('--filter', action='store_true', default=False)
 
     args = parser.parse_args()
     assert 0 <= args.ratio <= 1.0
 
     attack = Attacker(args, args.ratio, args.file, args.output, args.device)
     attack.work(args.method)
-    #attack.work("initial")
-    #attack.work("initialsentence")
     attack.save_file()
 
 if __name__ == '__main__':
