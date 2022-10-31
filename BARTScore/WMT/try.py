@@ -13,7 +13,7 @@ consoleHandler = logging.StreamHandler()
 consoleHandler.setFormatter(logFormatter)
 logger.addHandler(consoleHandler)
 
-from transformers import (AutoModel, AutoTokenizer, RobertaTokenizer)
+from transformers import (AutoModel, AutoTokenizer, BartModel)
 
 def batch_preprocess(lines):
     new_lines = []
@@ -64,11 +64,33 @@ class Attacker:
 
         ###################### model and tokenizer ############################
         #MNLI_BERT = 'https://github.com/AIPHES/emnlp19-moverscore/releases/download/0.6/MNLI_BERT.zip'
-        model_type = "roberta-large" # default
-        self.tokenizer = AutoTokenizer.from_pretrained("./roberta-large", use_fast=False, do_lower_case=True)
-        self.model = AutoModel.from_pretrained("./roberta-large")
-        self.model.eval()
-        self.embedding = self.model.embeddings.word_embeddings.weight
+        if args.target == 'bert_score':
+            model_type = "./roberta-large" # default
+            self.tokenizer = AutoTokenizer.from_pretrained(model_type, use_fast=False, do_lower_case=True)
+            self.model = AutoModel.from_pretrained(model_type)
+            self.model.eval()
+            self.embedding = self.model.embeddings.word_embeddings.weight
+        elif args.target == 'bart_score':
+            model_type = "facebook/bart-large-cnn"  # default
+            self.tokenizer = AutoTokenizer.from_pretrained(model_type, local_files_only=True, use_fast=False)
+            self.model = AutoModel.from_pretrained(model_type, local_files_only=True)
+            self.model.eval()
+            self.embedding = self.model.shared.weight
+        elif args.target == 'mover_score':
+            import os
+            USERHOME = os.path.expanduser("~")
+            MOVERSCORE_DIR = os.environ.get('MOVERSCORE', os.path.join(USERHOME, '.moverscore'))
+            model_type = os.path.join(MOVERSCORE_DIR)
+            self.tokenizer = AutoTokenizer.from_pretrained(model_type, use_fast=False)
+            self.model = AutoModel.from_pretrained(model_type)
+            self.model.eval()
+            self.embedding = self.model.embeddings.word_embeddings.weight
+        elif args.target == 'comet':
+            model_type = "./xlm-roberta-xl"  # default
+            self.tokenizer = AutoTokenizer.from_pretrained(model_type, use_fast=False)
+            self.model = AutoModel.from_pretrained(model_type)
+            self.model.eval()
+            self.embedding = self.model.embeddings.word_embeddings.weight
 
 
     def replace(self, w):
@@ -221,9 +243,11 @@ def main():
                         help='The ratio of the tokens in ref-A need to be modified.')
     parser.add_argument('--method', default="sort")
     parser.add_argument('--filter', action='store_true', default=False)
+    parser.add_argument('--target', default='bert_score')
 
     args = parser.parse_args()
     assert 0 <= args.ratio <= 1.0
+    assert args.target in ['bert_score', 'bart_score', 'mover_score', 'comet']
 
     attack = Attacker(args, args.ratio, args.file, args.output, args.device)
     attack.work(args.method)
