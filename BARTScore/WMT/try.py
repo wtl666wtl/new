@@ -6,14 +6,17 @@ import numpy as np
 import editdistance
 
 import logging
-logging.basicConfig(level = logging.INFO)
-logger = logging.getLogger(); logger.handlers = []
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger();
+logger.handlers = []
 logFormatter = logging.Formatter("%(asctime)s [%(funcName)-15s] [%(levelname)-5.5s]  %(message)s")
 consoleHandler = logging.StreamHandler()
 consoleHandler.setFormatter(logFormatter)
 logger.addHandler(consoleHandler)
 
 from transformers import (AutoModel, AutoTokenizer, BertModel, BertTokenizer)
+
 
 def batch_preprocess(lines):
     new_lines = []
@@ -64,9 +67,9 @@ class Attacker:
         logger.info('sys_names: %s', str(sys_names))
 
         ###################### model and tokenizer ############################
-        #MNLI_BERT = 'https://github.com/AIPHES/emnlp19-moverscore/releases/download/0.6/MNLI_BERT.zip'
+        # MNLI_BERT = 'https://github.com/AIPHES/emnlp19-moverscore/releases/download/0.6/MNLI_BERT.zip'
         if args.target == 'bert_score':
-            model_type = "./roberta-large" # default
+            model_type = "./roberta-large"  # default
             self.tokenizer = AutoTokenizer.from_pretrained(model_type, use_fast=False, do_lower_case=True)
             self.model = AutoModel.from_pretrained(model_type)
             self.model.eval()
@@ -109,16 +112,18 @@ class Attacker:
             min_dis = dis[2].item()
             new_w = self.tokenizer._convert_id_to_token(index)
         rank = 1
-        if self.filter and new_w.isalpha() == False:
+        while self.alpha_filter and (new_w.isalpha() == False or new_w[0] == '<'):
             rank += 1
             index = indice[rank].item()
             min_dis = dis[rank].item()
             new_w = self.tokenizer._convert_id_to_token(index)
-        #if self.alpha_filter and w.isalpha() == False:
+            if rank > 3 or w.isalpha == False:
+                min_dis = 1000000000
+                break
+        # if self.alpha_filter and w.isalpha() == False:
         #    min_dis = 1000000000
         self.cache[w] = (new_w, min_dis)
         return new_w, min_dis
-
 
     def random_modify(self, line):
         tokenized_text = self.tokenizer._tokenize(line)
@@ -129,7 +134,7 @@ class Attacker:
         if num == 0:
             return line
         arr = np.array(list(range(length)))
-        #arr = random.permutation(arr)
+        # arr = random.permutation(arr)
         # search and change
 
         Q = []
@@ -148,7 +153,6 @@ class Attacker:
             tokenized_text[id] = new_token
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
         return new_line
-
 
     def sort_modify(self, line):
         tokenized_text = self.tokenizer._tokenize(line)
@@ -191,7 +195,6 @@ class Attacker:
             edit_ratio = edit_d * 1.0 / ori_len
             logger.info('edit_ratio %s', edit_ratio)
 
-
     def save_file(self):
         torch.save(self.data, self.outfile)
 
@@ -214,12 +217,13 @@ def main():
     args = parser.parse_args()
     assert 0 <= args.ratio <= 1.0
     assert args.target in ['bert_score', 'bart_score', 'mover_score', 'comet']
-    #if args.strong_filter:
+    # if args.strong_filter:
     #    assert args.filter, "Please first set filter==True!"
 
     attack = Attacker(args, args.ratio, args.file, args.output, args.device)
     attack.work(args.method)
     attack.save_file()
+
 
 if __name__ == '__main__':
     main()
