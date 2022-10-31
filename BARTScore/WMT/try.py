@@ -126,8 +126,6 @@ class Attacker:
 
         Q = []
         for i in range(length):
-            if self.tokenizer.encoder.get(self.tokenizer.unk_token) == tokenized_text[i]:
-                continue
             new_token, dis = self.replace(tokenized_text[i])
             Q.append((dis, i, new_token))
         Q.sort()
@@ -135,9 +133,6 @@ class Attacker:
 
         for i in range(num):
             id = arr[i]
-            if self.tokenizer.encoder.get(self.tokenizer.unk_token) == tokenized_text[id]:
-                num += 1
-                continue
             new_token, _ = self.replace(tokenized_text[id])
             if _ >= medium_dis:
                 num += 1
@@ -146,40 +141,6 @@ class Attacker:
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
         return new_line
 
-    def initialsentence_modify(self, line):
-        tokenized_text = self.tokenizer._tokenize(line)
-        length = len(tokenized_text)
-        # random (maybe we can add some strategies)
-        import math
-        num = int(round(self.ratio * length))
-        if num == 0:
-            return line
-        arr = np.array(list(range(length)))
-        #arr = random.permutation(arr)
-        # search and change
-        start = [0]
-        for i in range(length):
-            if self.tokenizer.encoder.get('.') == tokenized_text[i] and i != length-1:
-                start.append(i+1)
-        cnt = 0
-        tot = 0
-        index = 0
-        while tot < num:
-            tot += 1
-            id = start[index] + cnt
-            index += 1
-            if index == len(start):
-                index = 0
-                cnt += 1
-
-            if self.tokenizer.encoder.get(self.tokenizer.unk_token) == tokenized_text[id]:
-                num += 1
-                continue
-            new_token, _ = self.replace(tokenized_text[id])
-            tokenized_text[id] = new_token
-
-        new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
-        return new_line
 
     def sort_modify(self, line):
         tokenized_text = self.tokenizer._tokenize(line)
@@ -191,8 +152,6 @@ class Attacker:
         # sort and change
         Q = []
         for i in range(length):
-            if self.tokenizer.encoder.get(self.tokenizer.unk_token) == tokenized_text[i]:
-                continue
             new_token, dis = self.replace(tokenized_text[i])
             Q.append((dis, i, new_token))
         Q.sort()
@@ -212,8 +171,6 @@ class Attacker:
             for line in sys_lines:
                 if func == "sort":
                     new_line = self.sort_modify(line)
-                elif func == "initial":
-                    new_line = self.initialsentence_modify(line)
                 else:
                     new_line = self.random_modify(line)
                 if flag < 5:
