@@ -13,7 +13,7 @@ consoleHandler = logging.StreamHandler()
 consoleHandler.setFormatter(logFormatter)
 logger.addHandler(consoleHandler)
 
-from transformers import (AutoModel, AutoTokenizer, BartModel)
+from transformers import (AutoModel, AutoTokenizer, BertModel, BertTokenizer)
 
 def batch_preprocess(lines):
     new_lines = []
@@ -81,8 +81,8 @@ class Attacker:
             USERHOME = os.path.expanduser("~")
             MOVERSCORE_DIR = os.environ.get('MOVERSCORE', os.path.join(USERHOME, '.moverscore'))
             model_type = os.path.join(MOVERSCORE_DIR)
-            self.tokenizer = AutoTokenizer.from_pretrained(model_type, use_fast=False)
-            self.model = AutoModel.from_pretrained(model_type)
+            self.tokenizer = BertTokenizer.from_pretrained(model_type, use_fast=False)
+            self.model = BertModel.from_pretrained(model_type)
             self.model.eval()
             self.embedding = self.model.embeddings.word_embeddings.weight
         elif args.target == 'comet':
