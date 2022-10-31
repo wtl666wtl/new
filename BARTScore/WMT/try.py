@@ -87,7 +87,7 @@ class Attacker:
             self.model.eval()
             self.embedding = self.model.embeddings.word_embeddings.weight
         elif args.target == 'comet':
-            model_type = "./xlm-roberta-xl"  # default
+            model_type = "./xlm-roberta-large"  # default
             self.tokenizer = AutoTokenizer.from_pretrained(model_type, use_fast=False)
             self.model = AutoModel.from_pretrained(model_type)
             self.model.eval()
