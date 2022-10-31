@@ -18,6 +18,8 @@ logger.addHandler(consoleHandler)
 from transformers import (AutoModel, AutoTokenizer, BertModel, BertTokenizer)
 
 
+punctuation = ['.', ':', ',', '/', '?', '<', '>', ';', '[', ']', '{', '}', '-', '_', '`', '~', '+', '=', '\'', '\"', '|', '\\']
+
 def batch_preprocess(lines):
     new_lines = []
     for line in lines:
@@ -111,6 +113,15 @@ class Attacker:
             index = indice[2].item()
             min_dis = dis[2].item()
             new_w = self.tokenizer._convert_id_to_token(index)
+
+        def judge(w):
+            for x in w:
+                if (x >= '0' and x <= '9') or x in punctuation:
+                    return True
+            return False
+        if self.alpha_filter and judge(w):
+            min_dis = 100000000
+        """
         rank = 1
         while self.alpha_filter and (new_w.isalpha() == False or new_w[0] == '<'):
             rank += 1
@@ -120,6 +131,7 @@ class Attacker:
             if rank > 3 or w.isalpha == False:
                 min_dis = 1000000000
                 break
+        """
         # if self.alpha_filter and w.isalpha() == False:
         #    min_dis = 1000000000
         self.cache[w] = (new_w, min_dis)

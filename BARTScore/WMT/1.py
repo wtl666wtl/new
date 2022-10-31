@@ -1,2 +1,2 @@
-s = "_"
+s = '_'
 print(s.isalpha())
