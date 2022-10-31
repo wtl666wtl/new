@@ -108,8 +108,14 @@ class Attacker:
             index = indice[2].item()
             min_dis = dis[2].item()
             new_w = self.tokenizer._convert_id_to_token(index)
-        if self.alpha_filter and w.isalpha() == False:
-            min_dis = 1000000000
+        rank = 1
+        if self.filter and new_w.isalpha() == False:
+            rank += 1
+            index = indice[rank].item()
+            min_dis = dis[rank].item()
+            new_w = self.tokenizer._convert_id_to_token(index)
+        #if self.alpha_filter and w.isalpha() == False:
+        #    min_dis = 1000000000
         self.cache[w] = (new_w, min_dis)
         return new_w, min_dis
 
