@@ -34,6 +34,7 @@ class Attacker:
         self.device = device
         self.outfile = outfile
         self.filter = args.filter
+        self.strong_filter = args.strong_filter
 
         self.cache = {}
 
@@ -92,7 +93,6 @@ class Attacker:
             self.model.eval()
             self.embedding = self.model.embeddings.word_embeddings.weight
 
-
     def replace(self, w):
         # search
         if w in self.cache:
@@ -108,6 +108,8 @@ class Attacker:
             index = indice[2].item()
             min_dis = dis[2].item()
             new_w = self.tokenizer._convert_id_to_token(index)
+            if self.strong_filter and w.isalpha() == False:
+                min_dis = 1000000000
         self.cache[w] = (new_w, min_dis)
         return new_w, min_dis
 
@@ -200,11 +202,14 @@ def main():
                         help='The ratio of the tokens in ref-A need to be modified.')
     parser.add_argument('--method', default="sort")
     parser.add_argument('--filter', action='store_true', default=False)
+    parser.add_argument('--strong_filter', action='store_true', default=False)
     parser.add_argument('--target', default='bert_score')
 
     args = parser.parse_args()
     assert 0 <= args.ratio <= 1.0
     assert args.target in ['bert_score', 'bart_score', 'mover_score', 'comet']
+    if args.strong_filter:
+        assert args.filter, "Please first set filter==True!"
 
     attack = Attacker(args, args.ratio, args.file, args.output, args.device)
     attack.work(args.method)

@@ -98,3 +98,28 @@ sort no 10% 13.59% bart_score default
 2022-10-30 06:07:27,796 [main           ] [INFO ]  ref-A: -3.811539 refa-percentage: 0.000000
 2022-10-30 06:07:27,796 [main           ] [INFO ]  sort: -4.309900 refa-percentage: -13.075053
 2022-10-30 06:07:27,796 [main           ] [INFO ]  reporting bart_score ends here
+sort no comet
+2022-10-31 03:26:47,247 [main           ] [INFO ]  === reporting for metric bleu ===
+2022-10-31 03:26:47,247 [main           ] [INFO ]  ref-A: 27.947621 refa-percentage: 0.000000
+2022-10-31 03:26:47,247 [main           ] [INFO ]  sort: 22.172084 refa-percentage: -20.665576
+2022-10-31 03:26:47,247 [main           ] [INFO ]  reporting bleu ends here
+2022-10-31 03:26:47,247 [main           ] [INFO ]  === reporting for metric comet ===
+2022-10-31 03:26:47,247 [main           ] [INFO ]  ref-A: 0.531359 refa-percentage: 0.000000
+2022-10-31 03:26:47,247 [main           ] [INFO ]  sort: 0.488270 refa-percentage: -8.109163
+2022-10-31 03:26:47,247 [main           ] [INFO ]  reporting comet ends here
+2022-10-31 03:26:47,247 [main           ] [INFO ]  === reporting for metric cometqe ===
+2022-10-31 03:26:47,247 [main           ] [INFO ]  ref-A: 0.114681 refa-percentage: 0.000000
+2022-10-31 03:26:47,247 [main           ] [INFO ]  sort: 0.111655 refa-percentage: -2.639066
+2022-10-31 03:26:47,247 [main           ] [INFO ]  reporting cometqe ends here
+2022-10-31 03:26:47,247 [main           ] [INFO ]  === reporting for metric bert_score ===
+2022-10-31 03:26:47,248 [main           ] [INFO ]  ref-A: 0.686948 refa-percentage: 0.000000
+2022-10-31 03:26:47,248 [main           ] [INFO ]  sort: 0.633096 refa-percentage: -7.839301
+2022-10-31 03:26:47,248 [main           ] [INFO ]  reporting bert_score ends here
+2022-10-31 03:26:47,248 [main           ] [INFO ]  === reporting for metric mover_score ===
+2022-10-31 03:26:47,248 [main           ] [INFO ]  ref-A: 0.592138 refa-percentage: 0.000000
+2022-10-31 03:26:47,248 [main           ] [INFO ]  sort: 0.568797 refa-percentage: -3.941773
+2022-10-31 03:26:47,248 [main           ] [INFO ]  reporting mover_score ends here
+2022-10-31 03:26:47,248 [main           ] [INFO ]  === reporting for metric bart_score ===
+2022-10-31 03:26:47,248 [main           ] [INFO ]  ref-A: -3.811539 refa-percentage: 0.000000
+2022-10-31 03:26:47,248 [main           ] [INFO ]  sort: -4.557919 refa-percentage: -19.582115
+2022-10-31 03:26:47,248 [main           ] [INFO ]  reporting bart_score ends here
