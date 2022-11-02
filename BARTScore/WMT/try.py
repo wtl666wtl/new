@@ -39,7 +39,7 @@ class Attacker:
         self.device = device
         self.outfile = outfile
         self.filter = args.filter
-        self.alpha_filter = args.alpha_filter
+        self.punc_filter = args.punc_filter
 
         self.cache = {}
 
@@ -113,7 +113,9 @@ class Attacker:
             index = indice[2].item()
             min_dis = dis[2].item()
             new_w = self.tokenizer._convert_id_to_token(index)
-
+        if self.punc_filter and new_w in punctuation and w in punctuation:
+            min_dis = 1000000000
+        """
         def judge(w):
             for x in w:
                 if (x >= '0' and x <= '9') or x in punctuation:
@@ -121,7 +123,6 @@ class Attacker:
             return False
         if self.alpha_filter and judge(w):
             min_dis = 100000000
-        """
         rank = 1
         while self.alpha_filter and (new_w.isalpha() == False or new_w[0] == '<'):
             rank += 1
@@ -197,6 +198,9 @@ class Attacker:
                     new_line = self.sort_modify(line)
                 else:
                     new_line = self.random_modify(line)
+                if self.args.target == "mover": # bad
+                    for p in punctuation:
+                        new_line.replace(" " + p, p)
                 if flag < 5:
                     flag += 1
                     logger.info('replacing sample %d: \n origin: %s \n %s: %s \n', flag, line, func, new_line)
@@ -223,7 +227,7 @@ def main():
                         help='The ratio of the tokens in ref-A need to be modified.')
     parser.add_argument('--method', default="sort")
     parser.add_argument('--filter', action='store_true', default=False)
-    parser.add_argument('--alpha_filter', action='store_true', default=False)
+    parser.add_argument('--punc_filter', action='store_true', default=False)
     parser.add_argument('--target', default='bert_score')
 
     args = parser.parse_args()
