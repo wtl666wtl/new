@@ -6,6 +6,7 @@ import numpy as np
 import editdistance
 
 import logging
+import bert_score
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger();
@@ -138,6 +139,46 @@ class Attacker:
         self.cache[w] = (new_w, min_dis)
         return new_w, min_dis
 
+    def super_replace(self, tokens, id):
+        origin = self.tokenizer.convert_tokens_to_string(tokens)
+        new_tokens = copy.deepcopy(tokens)
+        w = tokens[id]
+        w_id = self.tokenizer._convert_token_to_id(w)
+        w_embed = self.embedding[w_id]
+        dis = torch.linalg.norm(self.embedding - w_embed, ord=2, axis=1)
+        dis, indice = torch.sort(dis)
+        Q = 10
+
+        def run_bertscore(mt: list, ref: list):
+            """ Runs BERTScores and returns precision, recall and F1 BERTScores ."""
+            _, _, f1 = bert_score.score(
+                cands=mt,
+                refs=ref,
+                idf=False,
+                batch_size=32,
+                lang='en',
+                rescale_with_baseline=True,
+                verbose=True,
+                nthreads=4,
+            )
+            return f1.numpy()
+
+        waiting_list, lines, refs = [], [], []
+        for i in range(1, 1+Q):
+            index = indice[i].item()
+            min_dis = dis[i].item()
+            new_w = self.tokenizer._convert_id_to_token(index)
+            new_tokens[id] = new_w
+            new_line = self.tokenizer.convert_tokens_to_string(new_tokens)
+            lines.append(new_line)
+            refs.append(origin)
+            waiting_list.append((index, min_dis))
+
+        score = run_bertscore(lines, refs)
+        final_index = np.argmin(score)
+        new_w, min_dis = waiting_list[final_index]
+        return new_w, min_dis
+
     def random_modify(self, line):
         tokenized_text = self.tokenizer._tokenize(line)
         length = len(tokenized_text)
@@ -167,7 +208,7 @@ class Attacker:
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
         return new_line
 
-    def sort_modify(self, line):
+    def sort_modify2(self, line):
         tokenized_text = self.tokenizer._tokenize(line)
         length = len(tokenized_text)
         import math
@@ -178,6 +219,25 @@ class Attacker:
         Q = []
         for i in range(length):
             new_token, dis = self.replace(tokenized_text[i])
+            Q.append((dis, i, new_token))
+        Q.sort()
+        for i in range(num):
+            _, id, new_token = Q[i]
+            tokenized_text[id] = new_token
+        new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
+        return new_line
+
+    def sort_modify(self, line):
+        tokenized_text = self.tokenizer._tokenize(line)
+        length = len(tokenized_text)
+        import math
+        num = int(round(self.ratio * length))
+        if num == 0:
+            return line
+        # sort and change
+        Q = []
+        for i in range(length):
+            new_token, dis = self.super_replace(tokenized_text, i)
             Q.append((dis, i, new_token))
         Q.sort()
         for i in range(num):
@@ -198,9 +258,9 @@ class Attacker:
                     new_line = self.sort_modify(line)
                 else:
                     new_line = self.random_modify(line)
-                if self.args.target == "mover": # bad
+                if self.args.target == "mover_score": # bad
                     for p in punctuation:
-                        new_line.replace(" " + p, p)
+                        new_line = new_line.replace(" " + p, p)
                 if flag < 5:
                     flag += 1
                     logger.info('replacing sample %d: \n origin: %s \n %s: %s \n', flag, line, func, new_line)
