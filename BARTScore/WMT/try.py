@@ -256,7 +256,7 @@ class Attacker:
         return new_line
 
     def sort_modify(self, line):
-        import re
+        import regex as re
         self.pat = re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
         tokenized_text = []
         for token in re.findall(self.pat, line):
@@ -311,6 +311,7 @@ class Attacker:
                 index = indice[cnt].item()
                 min_dis = dis[cnt].item()
                 new_w = self.tokenizer._convert_id_to_token(index)
+                if w[0] == 2**8 + ord(' ') and new_w[0] != 2**8 + ord(' '):
                 if self.filter and new_w.lower() == w.lower():
                     Q += 1
                     continue
@@ -335,7 +336,7 @@ class Attacker:
         for i in range(len(qwq)):
             final_index = qwq[i]
             id, new_w, min_dis = waiting_list[final_index]
-            if flag.get(id) == 1453:
+            if flag.get(id) != 1453:
                 flag[id] = 1453
                 tokenized_text[id] = new_w
                 num -= 1
