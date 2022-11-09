@@ -18,9 +18,12 @@ logger.addHandler(consoleHandler)
 
 from transformers import (AutoModel, AutoTokenizer, BertModel, BertTokenizer)
 from transformers import logging
+
 logging.set_verbosity_error()
 
-punctuation = ['.', ':', ',', '/', '?', '<', '>', ';', '[', ']', '{', '}', '-', '_', '`', '~', '+', '=', '\'', '\"', '|', '\\']
+punctuation = ['.', ':', ',', '/', '?', '<', '>', ';', '[', ']', '{', '}', '-', '_', '`', '~', '+', '=', '\'', '\"',
+               '|', '\\']
+
 
 def batch_preprocess(lines):
     new_lines = []
@@ -166,7 +169,7 @@ class Attacker:
             return f1.numpy()
 
         waiting_list, lines, refs = [], [], []
-        for i in range(1, 1+Q):
+        for i in range(1, 1 + Q):
             index = indice[i].item()
             min_dis = dis[i].item()
             new_w = self.tokenizer._convert_id_to_token(index)
@@ -290,14 +293,15 @@ class Attacker:
             dis, indice = torch.sort(dis)
             Q = 8
 
-            for i in range(1, 1 + Q):
-                index = indice[i].item()
-                min_dis = dis[i].item()
+            cnt = 1
+            while cnt <= Q:
+                cnt += 1
+                index = indice[cnt].item()
+                min_dis = dis[cnt].item()
                 new_w = self.tokenizer._convert_id_to_token(index)
                 if self.filter and new_w.lower() == w.lower():
-                    index = 0
-                    min_dis = 1000000000
-                    new_w = self.tokenizer._convert_id_to_token(index)
+                    Q += 1
+                    continue
                 new_tokens[id] = new_w
                 new_line = self.tokenizer.convert_tokens_to_string(new_tokens)
                 lines.append(new_line)
@@ -310,7 +314,7 @@ class Attacker:
         for i in range(len(qwq)):
             final_index = qwq[i]
             id, new_w, min_dis = waiting_list[final_index]
-            if flag[id] != 1453:
+            if flag.get(id) == 1453:
                 flag[id] = 1453
                 tokenized_text[id] = new_w
                 num -= 1
@@ -318,7 +322,6 @@ class Attacker:
                     break
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
         return new_line
-
 
     def work(self, func="sort"):
         self.data[func] = []
@@ -332,7 +335,7 @@ class Attacker:
                     new_line = self.sort_modify(line)
                 else:
                     new_line = self.random_modify(line)
-                if self.args.target == "mover_score": # bad
+                if self.args.target == "mover_score":  # bad
                     for p in punctuation:
                         new_line = new_line.replace(" " + p, p)
                 if flag < 5:
