@@ -172,7 +172,7 @@ class Attacker:
             new_line = self.tokenizer.convert_tokens_to_string(new_tokens)
             lines.append(new_line)
             refs.append(origin)
-            waiting_list.append((index, min_dis))
+            waiting_list.append((new_w, min_dis))
 
         score = run_bertscore(lines, refs)
         final_index = np.argmin(score)
@@ -227,7 +227,7 @@ class Attacker:
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
         return new_line
 
-    def sort_modify(self, line):
+    def sort_modify3(self, line):
         tokenized_text = self.tokenizer._tokenize(line)
         length = len(tokenized_text)
         import math
@@ -245,6 +245,9 @@ class Attacker:
             tokenized_text[id] = new_token
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
         return new_line
+
+    def sort_modify(self, line):
+        return line + ' ' + line
 
     def work(self, func="sort"):
         self.data[func] = []
