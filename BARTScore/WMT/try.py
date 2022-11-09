@@ -147,7 +147,7 @@ class Attacker:
         w_embed = self.embedding[w_id]
         dis = torch.linalg.norm(self.embedding - w_embed, ord=2, axis=1)
         dis, indice = torch.sort(dis)
-        Q = 10
+        Q = 32
 
         def run_bertscore(mt: list, ref: list):
             """ Runs BERTScores and returns precision, recall and F1 BERTScores ."""
@@ -158,7 +158,7 @@ class Attacker:
                 batch_size=32,
                 lang='en',
                 rescale_with_baseline=True,
-                verbose=True,
+                verbose=False,
                 nthreads=4,
             )
             return f1.numpy()
@@ -168,6 +168,10 @@ class Attacker:
             index = indice[i].item()
             min_dis = dis[i].item()
             new_w = self.tokenizer._convert_id_to_token(index)
+            if self.filter and new_w.lower() == w.lower():
+                index = 0
+                min_dis = 1000000000
+                new_w = self.tokenizer._convert_id_to_token(index)
             new_tokens[id] = new_w
             new_line = self.tokenizer.convert_tokens_to_string(new_tokens)
             lines.append(new_line)
@@ -175,7 +179,7 @@ class Attacker:
             waiting_list.append((new_w, min_dis))
 
         score = run_bertscore(lines, refs)
-        final_index = np.argmin(score)
+        final_index = np.argmax(score)
         new_w, min_dis = waiting_list[final_index]
         return new_w, min_dis
 
@@ -227,7 +231,7 @@ class Attacker:
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
         return new_line
 
-    def sort_modify3(self, line):
+    def sort_modify(self, line):
         tokenized_text = self.tokenizer._tokenize(line)
         length = len(tokenized_text)
         import math
@@ -245,9 +249,6 @@ class Attacker:
             tokenized_text[id] = new_token
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
         return new_line
-
-    def sort_modify(self, line):
-        return line + ' ' + line
 
     def work(self, func="sort"):
         self.data[func] = []
