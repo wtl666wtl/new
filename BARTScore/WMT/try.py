@@ -302,6 +302,9 @@ class Attacker:
                 if self.filter and new_w.lower() == w.lower():
                     Q += 1
                     continue
+                if self.punc_filter and new_w in punctuation and w in punctuation:
+                    Q += 1
+                    continue
                 new_tokens[id] = new_w
                 new_line = self.tokenizer.convert_tokens_to_string(new_tokens)
                 lines.append(new_line)
