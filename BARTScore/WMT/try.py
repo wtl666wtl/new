@@ -17,7 +17,8 @@ consoleHandler.setFormatter(logFormatter)
 logger.addHandler(consoleHandler)
 
 from transformers import (AutoModel, AutoTokenizer, BertModel, BertTokenizer)
-
+from transformers import logging
+logging.set_verbosity_error()
 
 punctuation = ['.', ':', ',', '/', '?', '<', '>', ';', '[', ']', '{', '}', '-', '_', '`', '~', '+', '=', '\'', '\"', '|', '\\']
 
@@ -58,6 +59,7 @@ class Attacker:
         self.srcs = data['src']
         # ref-B is the reference
         self.refs = data['ref-B']
+        logger.info("number of texts: %d", len(self.refs))
         sys_names = []
         for sn in self.data:
             if sn != 'ref-B' and sn != 'src':
@@ -147,19 +149,19 @@ class Attacker:
         w_embed = self.embedding[w_id]
         dis = torch.linalg.norm(self.embedding - w_embed, ord=2, axis=1)
         dis, indice = torch.sort(dis)
-        Q = 32
+        Q = 8
 
-        def run_bertscore(mt: list, ref: list):
+        def run_bertscore(mt: list, ref):
             """ Runs BERTScores and returns precision, recall and F1 BERTScores ."""
             _, _, f1 = bert_score.score(
                 cands=mt,
                 refs=ref,
                 idf=False,
-                batch_size=32,
+                batch_size=8,
                 lang='en',
-                rescale_with_baseline=True,
+                rescale_with_baseline=False,
                 verbose=False,
-                nthreads=4,
+                nthreads=8,
             )
             return f1.numpy()
 
@@ -231,7 +233,7 @@ class Attacker:
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
         return new_line
 
-    def sort_modify(self, line):
+    def sort_modify3(self, line):
         tokenized_text = self.tokenizer._tokenize(line)
         length = len(tokenized_text)
         import math
@@ -249,6 +251,74 @@ class Attacker:
             tokenized_text[id] = new_token
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
         return new_line
+
+    def sort_modify(self, line):
+        tokenized_text = self.tokenizer._tokenize(line)
+        length = len(tokenized_text)
+        import math
+        num = int(round(self.ratio * length))
+        if num == 0:
+            return line
+        # sort and change
+        Q = []
+
+        origin = line
+        tokens = tokenized_text
+
+        waiting_list, lines, refs = [], [], []
+
+        def run_bertscore(mt: list, ref):
+            """ Runs BERTScores and returns precision, recall and F1 BERTScores ."""
+            _, _, f1 = bert_score.score(
+                cands=mt,
+                refs=ref,
+                idf=False,
+                batch_size=32,
+                lang='en',
+                rescale_with_baseline=False,
+                verbose=False,
+                nthreads=8,
+            )
+            return f1.numpy()
+
+        for id in range(length):
+            new_tokens = copy.deepcopy(tokens)
+            w = tokens[id]
+            w_id = self.tokenizer._convert_token_to_id(w)
+            w_embed = self.embedding[w_id]
+            dis = torch.linalg.norm(self.embedding - w_embed, ord=2, axis=1)
+            dis, indice = torch.sort(dis)
+            Q = 8
+
+            for i in range(1, 1 + Q):
+                index = indice[i].item()
+                min_dis = dis[i].item()
+                new_w = self.tokenizer._convert_id_to_token(index)
+                if self.filter and new_w.lower() == w.lower():
+                    index = 0
+                    min_dis = 1000000000
+                    new_w = self.tokenizer._convert_id_to_token(index)
+                new_tokens[id] = new_w
+                new_line = self.tokenizer.convert_tokens_to_string(new_tokens)
+                lines.append(new_line)
+                refs.append(origin)
+                waiting_list.append((id, new_w, min_dis))
+
+        score = run_bertscore(lines, refs)
+        qwq = np.argsort(score)
+        flag = {}
+        for i in range(len(qwq)):
+            final_index = qwq[i]
+            id, new_w, min_dis = waiting_list[final_index]
+            if flag[id] != 1453:
+                flag[id] = 1453
+                tokenized_text[id] = new_w
+                num -= 1
+                if num == 0:
+                    break
+        new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
+        return new_line
+
 
     def work(self, func="sort"):
         self.data[func] = []
