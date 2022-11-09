@@ -16,7 +16,7 @@ consoleHandler = logging.StreamHandler()
 consoleHandler.setFormatter(logFormatter)
 logger.addHandler(consoleHandler)
 
-from transformers import (AutoModel, AutoTokenizer, BertModel, BertTokenizer)
+from transformers import (AutoModel, AutoTokenizer, BertModel, RobertaTokenizer)
 from transformers import logging
 
 logging.set_verbosity_error()
@@ -256,7 +256,16 @@ class Attacker:
         return new_line
 
     def sort_modify(self, line):
-        tokenized_text = self.tokenizer._tokenize(line)
+        import re
+        self.pat = re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
+        tokenized_text = []
+        for token in re.findall(self.pat, line):
+            token = "".join(
+                self.tokenizer.byte_encoder[b] for b in token.encode("utf-8")
+            )  # Maps all our bytes to unicode strings, avoiding control tokens of the BPE (spaces in our case)
+            #tokenized_text.extend(bpe_token for bpe_token in self.bpe(token).split(" "))
+            tokenized_text.append(token)
+        #tokenized_text = self.tokenizer._tokenize(line)
         length = len(tokenized_text)
         import math
         num = int(round(self.ratio * length))
@@ -285,6 +294,9 @@ class Attacker:
             return f1.numpy()
 
         for id in range(length):
+            bpe_check = len(self.tokenizer.bpe(tokens[id]).split(" "))
+            if bpe_check > 1:
+                continue
             new_tokens = copy.deepcopy(tokens)
             w = tokens[id]
             w_id = self.tokenizer._convert_token_to_id(w)
@@ -303,6 +315,12 @@ class Attacker:
                     Q += 1
                     continue
                 if self.punc_filter and new_w in punctuation and w in punctuation:
+                    Q += 1
+                    continue
+                if new_w == self.tokenizer.unk_token or new_w == self.tokenizer.cls_token\
+                        or new_w == self.tokenizer.sep_token or new_w == self.tokenizer.pad_token\
+                        or new_w == self.tokenizer.mask_token or new_w == self.tokenizer.bos_token\
+                        or new_w == self.tokenizer.eos_token:
                     Q += 1
                     continue
                 new_tokens[id] = new_w
