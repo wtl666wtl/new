@@ -308,14 +308,21 @@ class Attacker:
             cnt = 1
             while cnt <= Q:
                 cnt += 1
+                if Q > 16:
+                    break
                 index = indice[cnt].item()
                 min_dis = dis[cnt].item()
                 new_w = self.tokenizer._convert_id_to_token(index)
-                if w[0] == 2**8 + ord(' ') and new_w[0] != 2**8 + ord(' '):
+                if ord(w[0]) == 2**8 + ord(' ') and ord(new_w[0]) != 2**8 + ord(' '):
+                    Q += 1
+                    continue
+                if ord(new_w[0]) == 2**8 + ord(' ') and ord(w[0]) != 2**8 + ord(' '):
+                    Q += 1
+                    continue
                 if self.filter and new_w.lower() == w.lower():
                     Q += 1
                     continue
-                if self.punc_filter and new_w in punctuation and w in punctuation:
+                if self.punc_filter and w in punctuation:
                     Q += 1
                     continue
                 if new_w == self.tokenizer.unk_token or new_w == self.tokenizer.cls_token\
