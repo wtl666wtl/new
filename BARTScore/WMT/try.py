@@ -361,7 +361,7 @@ class Attacker:
             logger.info('Running sys_name: %s', sys_name)
             sys_lines = self.data[sys_name]
             flag = 0
-            for line, src in sys_lines, self.srcs:
+            for line, src in zip(sys_lines, self.srcs):
                 if func == "sort":
                     new_line = self.sort_modify(line, src)
                 else:
