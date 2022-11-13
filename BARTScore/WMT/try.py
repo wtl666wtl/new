@@ -69,6 +69,7 @@ class Attacker:
                 sys_names.append(sn)
         self.sys_names = sys_names
 
+        self.srcs = data['src']
         self.sys_names = ['ref-A']  # if you want to run all systems, comment out this line
         transform_d = {'refs': self.refs, 'src': self.srcs}
 
@@ -255,7 +256,7 @@ class Attacker:
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
         return new_line
 
-    def sort_modify(self, line):
+    def sort_modify(self, line, src):
         import regex as re
         self.pat = re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
         tokenized_text = []
@@ -308,7 +309,7 @@ class Attacker:
             cnt = 1
             while cnt <= Q:
                 cnt += 1
-                if Q > 16:
+                if Q > 8:
                     break
                 index = indice[cnt].item()
                 min_dis = dis[cnt].item()
@@ -334,7 +335,8 @@ class Attacker:
                 new_tokens[id] = new_w
                 new_line = self.tokenizer.convert_tokens_to_string(new_tokens)
                 lines.append(new_line)
-                refs.append(origin)
+                #refs.append(origin)
+                refs.append(src)
                 waiting_list.append((id, new_w, min_dis))
 
         score = run_bertscore(lines, refs)
@@ -359,9 +361,9 @@ class Attacker:
             logger.info('Running sys_name: %s', sys_name)
             sys_lines = self.data[sys_name]
             flag = 0
-            for line in sys_lines:
+            for line, src in sys_lines, self.srcs:
                 if func == "sort":
-                    new_line = self.sort_modify(line)
+                    new_line = self.sort_modify(line, src)
                 else:
                     new_line = self.random_modify(line)
                 if self.args.target == "mover_score":  # bad
