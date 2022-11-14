@@ -304,12 +304,12 @@ class Attacker:
             w_embed = self.embedding[w_id]
             dis = torch.linalg.norm(self.embedding - w_embed, ord=2, axis=1)
             dis, indice = torch.sort(dis)
-            Q = 8
+            Q = 16
 
             cnt = 1
             while cnt <= Q:
                 cnt += 1
-                if Q > 8:
+                if Q > 32:
                     break
                 index = indice[cnt].item()
                 min_dis = dis[cnt].item()
@@ -335,8 +335,8 @@ class Attacker:
                 new_tokens[id] = new_w
                 new_line = self.tokenizer.convert_tokens_to_string(new_tokens)
                 lines.append(new_line)
-                #refs.append(origin)
-                refs.append(src)
+                refs.append(origin)
+                #refs.append(src)
                 waiting_list.append((id, new_w, min_dis))
 
         score = run_bertscore(lines, refs)
