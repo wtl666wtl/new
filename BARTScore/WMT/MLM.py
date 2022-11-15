@@ -40,7 +40,8 @@ def prepare_sentence(tokenizer, text, id):
         if i == id:
             ids.append(tokenizer._convert_token_to_id(tokenizer.mask_token))
         else:
-            ids.extend(bpe_token for bpe_token in tokenizer.bpe(text[i]).split(" "))
+            for bpe_token in tokenizer.bpe(text[i]).split(" "):
+                ids.append(tokenizer._convert_token_to_id(bpe_token))
     ids.append(tokenizer._convert_token_to_id(tokenizer.eos_token))
     return torch.tensor([ids]).long()
 
@@ -93,6 +94,7 @@ class Attacker:
             self.tokenizer = RobertaTokenizer.from_pretrained(model_type, use_fast=False, do_lower_case=True)
             self.model = RobertaForMaskedLM.from_pretrained(model_type)
             self.model.eval()
+            self.model.cuda()
             #self.embedding = self.model.embeddings.word_embeddings.weight
         elif args.target == 'bart_score':
             model_type = "facebook/bart-large-cnn"  # default
