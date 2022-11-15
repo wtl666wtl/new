@@ -35,13 +35,13 @@ def batch_preprocess(lines):
 
 def prepare_sentence(tokenizer, text, id):
     ids = []
-    ids.append(tokenizer.bos_token)
+    ids.append(tokenizer._convert_token_to_id(tokenizer.bos_token))
     for i in range(len(text)):
         if i == id:
-            ids.append(tokenizer.mask_token)
+            ids.append(tokenizer._convert_token_to_id(tokenizer.mask_token))
         else:
             ids.extend(bpe_token for bpe_token in tokenizer.bpe(text[i]).split(" "))
-    ids.append(tokenizer.eos_token)
+    ids.append(tokenizer._convert_token_to_id(tokenizer.eos_token))
     return torch.tensor([ids]).long()
 
 
@@ -93,7 +93,7 @@ class Attacker:
             self.tokenizer = RobertaTokenizer.from_pretrained(model_type, use_fast=False, do_lower_case=True)
             self.model = RobertaForMaskedLM.from_pretrained(model_type)
             self.model.eval()
-            self.embedding = self.model.embeddings.word_embeddings.weight
+            #self.embedding = self.model.embeddings.word_embeddings.weight
         elif args.target == 'bart_score':
             model_type = "facebook/bart-large-cnn"  # default
             self.tokenizer = AutoTokenizer.from_pretrained(model_type, local_files_only=True, use_fast=False)
