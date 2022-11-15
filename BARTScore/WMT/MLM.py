@@ -139,7 +139,7 @@ class Attacker:
         # sort and change
         cnt = 0
         while cnt < num:
-            if num > length:
+            if cnt == length:
                 break
             id = arr[cnt]
             cnt += 1
