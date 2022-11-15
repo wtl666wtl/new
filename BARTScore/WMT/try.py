@@ -340,7 +340,7 @@ class Attacker:
                 waiting_list.append((id, new_w, min_dis))
 
         score = run_bertscore(lines, refs)
-        qwq = np.argsort(score)
+        qwq = np.argsort(-score)
         flag = {}
         for i in range(len(qwq)):
             final_index = qwq[i]
