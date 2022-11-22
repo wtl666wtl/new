@@ -1,7 +1,7 @@
 import copy
 import torch
 import argparse
-from numpy import random
+import random
 import numpy as np
 import editdistance
 
@@ -24,6 +24,8 @@ logging.set_verbosity_error()
 punctuation = ['.', ':', ',', '/', '?', '<', '>', ';', '[', ']', '{', '}', '-', '_', '`', '~', '+', '=', '\'', '\"',
                '|', '\\']
 
+random.seed(0)
+np.random.seed(0)
 
 def batch_preprocess(lines):
     new_lines = []
@@ -135,7 +137,7 @@ class Attacker:
             return line
 
         arr = np.array(list(range(length)))
-        arr = random.permutation(arr)
+        arr = np.random.permutation(arr)
         # sort and change
         cnt = 0
         while cnt < num:
@@ -154,6 +156,8 @@ class Attacker:
             masked_index = (ids == self.tokenizer.mask_token_id).nonzero()[0, 1]
             value, predicted_index = torch.topk(predictions[0, masked_index], k=self.args.top_k)
             value = value.cpu().numpy()
+            value = np.exp(value)
+            value = value / np.sum(value)
             predicted_index = predicted_index.cpu().numpy()
             select_index = np.random.choice(predicted_index, 1, p=value)
             predicted_token = [self.tokenizer.convert_ids_to_tokens([idx.item()])[0] for idx in select_index]

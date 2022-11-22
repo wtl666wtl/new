@@ -256,7 +256,7 @@ class Attacker:
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
         return new_line
 
-    def sort_modify(self, line, src):
+    def sort_modify_(self, line, src):
         import regex as re
         self.pat = re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
         tokenized_text = []
@@ -351,6 +351,106 @@ class Attacker:
                 num -= 1
                 if num == 0:
                     break
+        new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
+        return new_line
+
+    def sort_modify(self, line, src):
+        import regex as re
+        self.pat = re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
+        tokenized_text = []
+        for token in re.findall(self.pat, line):
+            token = "".join(
+                self.tokenizer.byte_encoder[b] for b in token.encode("utf-8")
+            )  # Maps all our bytes to unicode strings, avoiding control tokens of the BPE (spaces in our case)
+            #tokenized_text.extend(bpe_token for bpe_token in self.bpe(token).split(" "))
+            tokenized_text.append(token)
+        #tokenized_text = self.tokenizer._tokenize(line)
+        length = len(tokenized_text)
+        import math
+        num = int(round(self.ratio * length))
+        if num == 0:
+            return line
+        # sort and change
+        Q = []
+
+        origin = line
+        tokens = tokenized_text
+
+        waiting_list, lines, refs = [], [], []
+
+        def run_bertscore(mt: list, ref):
+            """ Runs BERTScores and returns precision, recall and F1 BERTScores ."""
+            _, _, f1 = bert_score.score(
+                cands=mt,
+                refs=ref,
+                idf=False,
+                batch_size=256,
+                lang='en',
+                rescale_with_baseline=False,
+                verbose=False,
+                nthreads=8,
+            )
+            return f1.numpy()
+
+        flag = {}
+        while num > 0:
+            for id in range(length):
+                if flag.get(id) == 1453: continue
+                bpe_check = len(self.tokenizer.bpe(tokens[id]).split(" "))
+                if bpe_check > 1:
+                    continue
+                new_tokens = copy.deepcopy(tokens)
+                w = tokens[id]
+                w_id = self.tokenizer._convert_token_to_id(w)
+                w_embed = self.embedding[w_id]
+                dis = torch.linalg.norm(self.embedding - w_embed, ord=2, axis=1)
+                dis, indice = torch.sort(dis)
+                Q = 8
+
+                cnt = 1
+                while cnt <= Q:
+                    cnt += 1
+                    if Q > 10:
+                        break
+                    index = indice[cnt].item()
+                    min_dis = dis[cnt].item()
+                    new_w = self.tokenizer._convert_id_to_token(index)
+                    if ord(w[0]) == 2 ** 8 + ord(' ') and ord(new_w[0]) != 2 ** 8 + ord(' '):
+                        Q += 1
+                        continue
+                    if ord(new_w[0]) == 2 ** 8 + ord(' ') and ord(w[0]) != 2 ** 8 + ord(' '):
+                        Q += 1
+                        continue
+                    if self.filter and new_w.lower() == w.lower():
+                        Q += 1
+                        continue
+                    if self.punc_filter and w in punctuation:
+                        Q += 1
+                        continue
+                    if new_w == self.tokenizer.unk_token or new_w == self.tokenizer.cls_token \
+                            or new_w == self.tokenizer.sep_token or new_w == self.tokenizer.pad_token \
+                            or new_w == self.tokenizer.mask_token or new_w == self.tokenizer.bos_token \
+                            or new_w == self.tokenizer.eos_token:
+                        Q += 1
+                        continue
+                    new_tokens[id] = new_w
+                    new_line = self.tokenizer.convert_tokens_to_string(new_tokens)
+                    lines.append(new_line)
+                    refs.append(origin)
+                    # refs.append(src)
+                    waiting_list.append((id, new_w, min_dis))
+            score = run_bertscore(lines, refs)
+            qwq = np.argsort(-score)
+            for i in range(len(qwq)):
+                final_index = qwq[i]
+                id, new_w, min_dis = waiting_list[final_index]
+                if flag.get(id) != 1453:
+                    flag[id] = 1453
+                    tokenized_text[id] = new_w
+                    num -= 1
+                    break
+
+
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
         return new_line
 
