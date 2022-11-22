@@ -59,6 +59,10 @@ class Attacker:
             if sn != 'src':
                 self.data[sn] = batch_preprocess(self.data[sn])
 
+        data['src'] = data['src'][:50]
+        data['ref-A'] = data['ref-A'][:50]
+        data['ref-B'] = data['ref-B'][:50]
+
         self.srcs = data['src']
         # ref-B is the reference
         self.refs = data['ref-B']
