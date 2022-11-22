@@ -152,8 +152,11 @@ class Attacker:
                 output = self.model(ids.cuda())
             predictions = output[0]
             masked_index = (ids == self.tokenizer.mask_token_id).nonzero()[0, 1]
-            _, predicted_index = torch.topk(predictions[0, masked_index], k=5)
-            predicted_token = [self.tokenizer.convert_ids_to_tokens([idx.item()])[0] for idx in predicted_index]
+            value, predicted_index = torch.topk(predictions[0, masked_index], k=self.args.top_k)
+            value = value.cpu().numpy()
+            predicted_index = predicted_index.cpu().numpy()
+            select_index = np.random.choice(predicted_index, 1, p=value)
+            predicted_token = [self.tokenizer.convert_ids_to_tokens([idx.item()])[0] for idx in select_index]
             tokenized_text[id] = predicted_token[0]
 
         new_line = self.tokenizer.convert_tokens_to_string(tokenized_text)
@@ -199,9 +202,10 @@ def main():
     parser.add_argument('--ratio', type=float, default=0.1,
                         help='The ratio of the tokens in ref-A need to be modified.')
     parser.add_argument('--method', default="sort")
-    parser.add_argument('--filter', action='store_true', default=False)
-    parser.add_argument('--punc_filter', action='store_true', default=False)
+    #parser.add_argument('--filter', action='store_true', default=False)
+    #parser.add_argument('--punc_filter', action='store_true', default=False)
     parser.add_argument('--target', default='bert_score')
+    parser.add_argument('--top_k', type=int, default=10)
 
     args = parser.parse_args()
     assert 0 <= args.ratio <= 1.0
