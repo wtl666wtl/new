@@ -55,8 +55,8 @@ class Attacker:
         self.ratio = ratio
         self.device = device
         self.outfile = outfile
-        self.filter = args.filter
-        self.punc_filter = args.punc_filter
+        #self.filter = args.filter
+        #self.punc_filter = args.punc_filter
 
         self.cache = {}
 
