@@ -34,6 +34,19 @@ def batch_preprocess(lines):
     return new_lines
 
 
+def prepare_sentence(tokenizer, text, id):
+    ids = []
+    ids.append(tokenizer._convert_token_to_id(tokenizer.bos_token))
+    for i in range(len(text)):
+        if i == id:
+            ids.append(tokenizer._convert_token_to_id(tokenizer.mask_token))
+        else:
+            for bpe_token in tokenizer.bpe(text[i]).split(" "):
+                ids.append(tokenizer._convert_token_to_id(bpe_token))
+    ids.append(tokenizer._convert_token_to_id(tokenizer.eos_token))
+    return torch.tensor([ids]).long()
+
+
 class Attacker:
     def __init__(self, args, ratio, file_path, outfile, device='cuda:0'):
         """ file_path: path to the pickle file
@@ -369,7 +382,7 @@ class Attacker:
             #tokenized_text.extend(bpe_token for bpe_token in self.bpe(token).split(" "))
             tokenized_text.append(token)
         #tokenized_text = self.tokenizer._tokenize(line)
-        length = len(tokenized_text)
+        #length = len(tokenized_text)
         import math
         num = int(round(self.ratio * length))
         if num == 0:
@@ -398,18 +411,39 @@ class Attacker:
 
         flag = {}
         while num > 0:
-            for id in range(length):
+            for id in range(len(tokenized_text)):
                 if flag.get(id) == 1453: continue
                 bpe_check = len(self.tokenizer.bpe(tokens[id]).split(" "))
                 if bpe_check > 1:
                     continue
+
+                new_line = self.tokenizer.convert_tokens_to_string(tokens[:id] + tokens[id + 1:])
+                lines.append(new_line)
+                refs.append(origin)
+                waiting_list.append((id, '<delete>', 0))
+
+                Q = 8
+
+                ids = prepare_sentence(self.tokenizer, tokenized_text, id)
+                with torch.no_grad():
+                    output = self.model(ids.cuda())
+                predictions = output[0]
+                masked_index = (ids == self.tokenizer.mask_token_id).nonzero()[0, 1]
+                value, predicted_index = torch.topk(predictions[0, masked_index], k=Q)
+                predicted_token = [self.tokenizer.convert_ids_to_tokens([idx.item()])[0] for idx in predicted_index]
+                for i in range(Q):
+                    new_line = self.tokenizer.convert_tokens_to_string(tokens[:id] + predicted_token[i] + tokens[id + 1:])
+                    lines.append(new_line)
+                    refs.append(origin)
+                    # refs.append(src)
+                    waiting_list.append((id, predicted_token[i], 0))
+
                 new_tokens = copy.deepcopy(tokens)
                 w = tokens[id]
                 w_id = self.tokenizer._convert_token_to_id(w)
                 w_embed = self.embedding[w_id]
                 dis = torch.linalg.norm(self.embedding - w_embed, ord=2, axis=1)
                 dis, indice = torch.sort(dis)
-                Q = 8
 
                 cnt = 1
                 while cnt <= Q:
@@ -448,6 +482,15 @@ class Attacker:
             for i in range(len(qwq)):
                 final_index = qwq[i]
                 id, new_w, min_dis = waiting_list[final_index]
+                if new_w == '<delete>':
+                    for rid in range(id, len(tokenized_text)):
+                        if flag.get(id) == 1453:
+                            flag[id] = 0
+                            if rid != id:
+                                flag[id-1] = 1453
+                    tokenized_text = tokenized_text[:id] + tokenized_text[id+1:]
+                    num -= 1
+                    break
                 if flag.get(id) != 1453:
                     flag[id] = 1453
                     tokenized_text[id] = new_w
@@ -473,7 +516,7 @@ class Attacker:
                 if self.args.target == "mover_score":  # bad
                     for p in punctuation:
                         new_line = new_line.replace(" " + p, p)
-                if flag < 5:
+                if flag < 50:
                     flag += 1
                     logger.info('replacing sample %d: \n origin: %s \n %s: %s \n', flag, line, func, new_line)
                 self.data[func].append(new_line)
