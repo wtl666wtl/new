@@ -16,7 +16,7 @@ consoleHandler = logging.StreamHandler()
 consoleHandler.setFormatter(logFormatter)
 logger.addHandler(consoleHandler)
 
-from transformers import (AutoModel, AutoTokenizer, BertModel, RobertaTokenizer)
+from transformers import (AutoModel, AutoTokenizer, BertModel, RobertaTokenizer, RobertaForMaskedLM)
 from transformers import logging
 
 logging.set_verbosity_error()
@@ -96,10 +96,12 @@ class Attacker:
         # MNLI_BERT = 'https://github.com/AIPHES/emnlp19-moverscore/releases/download/0.6/MNLI_BERT.zip'
         if args.target == 'bert_score':
             model_type = "./roberta-large"  # default
-            self.tokenizer = AutoTokenizer.from_pretrained(model_type, use_fast=False, do_lower_case=True)
-            self.model = AutoModel.from_pretrained(model_type)
+            self.tokenizer = RobertaTokenizer.from_pretrained(model_type, use_fast=False, do_lower_case=True)
+            self.model = RobertaForMaskedLM.from_pretrained(model_type)
             self.model.eval()
-            self.embedding = self.model.embeddings.word_embeddings.weight
+            self.model.cuda()
+            model = AutoModel.from_pretrained(model_type, local_files_only=True)
+            self.embedding = model.embeddings.word_embeddings.weight
         elif args.target == 'bart_score':
             model_type = "facebook/bart-large-cnn"  # default
             self.tokenizer = AutoTokenizer.from_pretrained(model_type, local_files_only=True, use_fast=False)
@@ -384,7 +386,7 @@ class Attacker:
         #tokenized_text = self.tokenizer._tokenize(line)
         #length = len(tokenized_text)
         import math
-        num = int(round(self.ratio * length))
+        num = int(round(self.ratio * len(tokenized_text)))
         if num == 0:
             return line
         # sort and change
@@ -424,6 +426,8 @@ class Attacker:
 
                 Q = 8
 
+                new_tokens = copy.deepcopy(tokens)
+                w = tokens[id]
                 ids = prepare_sentence(self.tokenizer, tokenized_text, id)
                 with torch.no_grad():
                     output = self.model(ids.cuda())
@@ -432,7 +436,14 @@ class Attacker:
                 value, predicted_index = torch.topk(predictions[0, masked_index], k=Q)
                 predicted_token = [self.tokenizer.convert_ids_to_tokens([idx.item()])[0] for idx in predicted_index]
                 for i in range(Q):
-                    new_line = self.tokenizer.convert_tokens_to_string(tokens[:id] + predicted_token[i] + tokens[id + 1:])
+                    if self.filter and predicted_token[i].lower() == w.lower():
+                        Q += 1
+                        continue
+                    if self.punc_filter and w in punctuation:
+                        Q += 1
+                        continue
+                    new_tokens[id] = predicted_token[i]
+                    new_line = self.tokenizer.convert_tokens_to_string(new_tokens)
                     lines.append(new_line)
                     refs.append(origin)
                     # refs.append(src)

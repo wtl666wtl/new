@@ -1,0 +1,207 @@
+1. A/An/This/The/These造成很小的影响？
+2. number造成很小的影响
+3. 不精确的介词替换，有的可接受，有的意思出现变化 at this->for this， before->during，但我怎么感觉这就是分数下降的原因
+
+10% -> 1%
+
+2022-11-30 09:47:52,473 [work           ] [INFO ]  replacing sample 1:                                                                                                                                    [128/527]
+ origin: Biker reacts lightning fast and prevents worse.
+ sort: Biker reacts lightning quick and prevents worse.
+
+2022-11-30 09:48:06,216 [work           ] [INFO ]  replacing sample 2:
+ origin: A traffic accident occurred on Friday evening on the country road between Machtolsheim and Merklingen where a bike rider was only slightly injured thanks to his quick reaction.
+ sort: An traffic accident happened on Friday evening in the country road between Machtolsheim and Merklingen where a bike rider was only slightly injured thanks to his quick reaction.
+
+2022-11-30 09:48:08,752 [work           ] [INFO ]  replacing sample 3:
+ origin: A female car driver overlooks a biker
+ sort: This female car driver overlooks a biker
+
+2022-11-30 09:48:23,792 [work           ] [INFO ]  replacing sample 4:
+ origin: Around 21:30 a 44 year old female car driver, coming from Merklingen with her VW, wanted to turn left into the country road 1230 into the direction of Machtolsheim.
+ sort: About 20:30 a 45 year old female car driver, coming from Merklingen with her VW, wanted to turn left into the country road 1230 into the direction of Machtolsheim.
+
+2022-11-30 09:48:31,206 [work           ] [INFO ]  replacing sample 5:
+ origin: At this, she overlooked the 24 year old motorbike driver with right-of way who came from the direction of Nellingen.
+ sort: For this, she overlooked the 25 year old motorbike driver with right-of way who came from the direction of Nellingen.
+
+2022-11-30 09:48:34,145 [work           ] [INFO ]  replacing sample 6:
+ origin: When they collided hand and foot brake pedals break off
+ sort: If they collided hand and foot brake pedals break off
+
+2022-11-30 09:48:41,160 [work           ] [INFO ]  replacing sample 7:
+ origin: The biker still attempted to evade the car, however, brushed against the car at the rear end.
+ sort: A biker still attempted to evade the car, however, brushed against the car at the back end.
+
+2022-11-30 09:48:54,432 [work           ] [INFO ]  replacing sample 8:
+ origin: Thrush the brushing against the car hand break handle and foot break pedal were ripped off the Suzuki and the driver was no longer able to break.
+ sort: Thrush the brushing against the car handbreak handle and foot break pedal were torn off the Suzuki and the driver was not longer able to break.
+
+2022-11-30 09:49:01,645 [work           ] [INFO ]  replacing sample 9:
+ origin: Alerted he steered his bike into the grass strip beside the road and taxied it to a standstill without losing control.
+ sort: Alerted he steered his bike onto the grass strip beside the road and taxied it to the standstill without losing control.
+
+2022-11-30 09:49:01,645 [work           ] [INFO ]  replacing sample 10:
+ origin: Biker suffers leg injuries
+ sort: Biker suffers leg injuries
+
+2022-11-30 09:49:13,532 [work           ] [INFO ]  replacing sample 11:
+ origin: Through the collision with the car the biker suffered, however, an injury on his leg and had to be treated in a hospital.
+ sort: Before the collision with the car the biker sustained, however, an injury on his knee and had to be treated in a hospital.
+
+2022-11-30 09:49:16,233 [work           ] [INFO ]  replacing sample 12:
+ origin: Mamming: Corona mass infection: 174 harvesters infected
+ sort: Mamming: Corona mass infection: 176 harvesters infected
+
+2022-11-30 09:49:30,208 [work           ] [INFO ]  replacing sample 13:
+ origin: After a Corona mass infection on a large vegetable farm in Mamming, Lower Bavaria, almost 500 people have been quarantined and are not allowed anymore to leave the operations.
+ sort: Following a Riverside mass infection on a large vegetable farm in Mamming, Lower Bavaria, almost 600 people have been quarantined and are not allowed anymore to leave the operations.
+
+2022-11-30 09:49:32,796 [work           ] [INFO ]  replacing sample 14:
+ origin: A security service monitors the curfew.
+ sort: The security service monitors the curfew.
+
+2022-11-30 09:49:46,093 [work           ] [INFO ]  replacing sample 15:
+ origin: Altogether 174 harvesters were tested positive for the Corona virus Sars-CoV-2 at a mass screening as the district administration Dingolfing-Landau announced on Saturday evening.
+ sort: Altogether 176 harvesters were tested positive of the Corona virus Sars-CoV-2 at a mass screening as the district administration Dingolfing-Landau announced on Sunday evening.
+
+2022-11-30 09:49:59,596 [work           ] [INFO ]  replacing sample 16:                                                                                                                                    [97/556]
+ origin: "In order to avoid a further spreading we unfortunately must take this measure to protect the population", county commissioner Werner Bumeder (CSU) explained.
+ sort: "In order to avoid a further spreading we unfortunately must take this step to protect the population", county commissioner Ernst Bumeder (CSU) noted.
+
+2022-11-30 09:50:06,207 [work           ] [INFO ]  replacing sample 17:
+ origin: Before that already seven coworkers had been infected on this farm - this triggered the mass screening.
+ sort: During that already eight coworkers had been infected on this farm - this triggered the mass screening.
+
+2022-11-30 09:50:13,396 [work           ] [INFO ]  replacing sample 18:
+ origin: The operations concern a large vegetable farm that grows strawberries, cucumbers, cabbage and beetroot - however the cucumbers only for canning jars.
+ sort: This operations concern a large vegetable farm that grows strawberries, cucumbers, cabbage and beetroot _ however the cucumbers only for canning jars.
+
+2022-11-30 09:50:19,801 [work           ] [INFO ]  replacing sample 19:
+ origin: Mamming is a rural community with about 3300 residents not far from Dingolfing with its large BMW factory.
+ sort: Mamming is a rural community with about 3300 residents not far from Dingolfing with its big BMW plant.
+
+2022-11-30 09:50:26,730 [work           ] [INFO ]  replacing sample 20:
+ origin: Bumeder called on the citizens to keep calm: "According to our information it concerns a closed group of persons."
+ sort: Bumeder calls on the citizens to stay calm: "According to our information it concerns a closed group of persons."
+
+2022-11-30 09:50:34,043 [work           ] [INFO ]  replacing sample 21:
+ origin: On the farm infected coworkers were separated from non-infected ones, the premises are now fenced in with a construction fence.
+ sort: At the farm infected coworkers were separated from non-infected ones, the premises are now fenced up with a construction fence.
+
+2022-11-30 09:50:36,919 [work           ] [INFO ]  replacing sample 22:
+ origin: Greens and SPD blamed the State government for shared responsibility.
+ sort: Greens and SPD blame the State government for shared responsibility.
+
+2022-11-30 09:50:44,290 [work           ] [INFO ]  replacing sample 23:
+ origin: Both opposition parties accused prime minister Markus S_der (CSU) and his cabinet to neglect monitoring the housing for seasonal workers.
+ sort: All opposition parties accuse prime minister Markus S_der (CSU) and his cabinet to neglect monitoring the housing for seasonal workers.
+
+2022-11-30 09:50:57,586 [work           ] [INFO ]  replacing sample 24:
+ origin: "That can backfire horribly when such local infections spread and regional lockdowns must be ordered", said J_rgen Mistol, the parliamentary manager of the Greens.
+ sort: "This can backfire horribly when such local infections spread and regional lockdowns must be ordered," says J_rgen Mistol, the parliamentary manager of the Greens.
+
+2022-11-30 09:51:21,591 [work           ] [INFO ]  replacing sample 25:
+ origin: The SPD shares a similar view: "We have asked for a special control program also for farms with harvesters after the Corona outbreak in the Wiesenhof slaughterhouse mid May", said the environmental expe
+rt Florian von Brunn.
+ sort: His SPD shares a similar view: "We've asked for a special control program also for farms with harvesters after the Riverside outbreak in the Wiesenhof slaughterhouse mid August", said the environmental ex
+pert Florian von Brunn.
+
+2022-11-30 09:51:28,671 [work           ] [INFO ]  replacing sample 26:
+ origin: "Especially the hygiene conditions at the work place and the living quarters must - in our view - thoroughly checked.
+ sort: "Especially the hygiene conditions in the working place and the living quarters must - in our view - thoroughly checked.
+
+2022-11-30 09:51:31,296 [work           ] [INFO ]  replacing sample 27:
+ origin: And that obviously did not happen."
+ sort: So that obviously did not happen."
+
+2022-11-30 09:51:33,951 [work           ] [INFO ]  replacing sample 28:
+ origin: The outbreak occurred "predictably".
+ sort: This outbreak occurred "predictably".
+
+2022-11-30 09:51:40,626 [work           ] [INFO ]  replacing sample 29:
+ origin: U-Bahnhof Aidenbachstra_e: Dangerous fight: A 19 year-old fell onto the track after being pushed
+ sort: O-Bahnhof Aidenbachstra_e: Dangerous fight: A 19 year-old fell onto a track after being pushed
+
+2022-11-30 09:51:52,853 [work           ] [INFO ]  replacing sample 30:
+ origin: A 19 year-old fell onto the track after being pushed during a fight between two groups of young people at U-Bahnhof Aidenbachstra_e.
+ sort: This 21 year-old fell onto the track after being pushed during a fight between two groups of young people in U-Bahnhof Aidenbachstra_e.
+
+2022-11-30 09:52:00,726 [work           ] [INFO ]  replacing sample 31:
+ origin: Obersendling - A fight broke out between two groups of young people at U-Bahnhof Aidenbachstra_e at 16:15h on Friday.
+ sort: Obersendling - A brawl broke out between two groups of young people at U-Bahnhof Aidenbachstra_e at 17:15h on Friday.
+
+2022-11-30 09:52:03,703 [work           ] [INFO ]  replacing sample 32:
+ origin: A passerby called the police, who called-up multiple squad cars.
+ sort: This passerby called the police, who called-up multiple squad cars.
+
+2022-11-30 09:52:10,925 [work           ] [INFO ]  replacing sample 33:
+ origin: Following initial investigations it seems a boy from Munich (17) pushed a 19 year-old to the floor.
+ sort: Through initial investigations it seems a boy from Munich (17) shoved a 19 year-old to the floor.
+
+2022-11-30 09:52:17,601 [work           ] [INFO ]  replacing sample 34:
+ origin: This resulted in the young man slipping over the edge of the platform and falling onto the track.
+ sort: That resulted in the young man slipping over the edge of the platform, falling onto the track.
+
+2022-11-30 09:52:24,263 [work           ] [INFO ]  replacing sample 35:
+ origin: People in the 17 year-old's party helped the fallen boy climb out of the track bed.
+ sort: Everyone in the 18 year-old's party helped the fallen boy climb out of the track bed.
+
+2022-11-30 09:52:26,923 [work           ] [INFO ]  replacing sample 36:
+ origin: There was no danger of a passing train.
+ sort: That was no danger of a passing train.
+
+2022-11-30 09:52:29,733 [work           ] [INFO ]  replacing sample 37:
+ origin: Another scuffle followed between the two persons, according to the police.
+ sort: One scuffle followed between the two persons, according to the police.
+
+2022-11-30 09:52:36,521 [work           ] [INFO ]  replacing sample 38:
+ origin: The 17 year-old proceeded to flee the crime scene, however, his personal details could be retrieved later.
+ sort: Our 16 year-old proceeded to flee the crime scene, however, his personal details could be retrieved later.
+
+2022-11-30 09:52:39,385 [work           ] [INFO ]  replacing sample 39:
+ origin: He reported to the 29th police station with his father.
+ sort: It reported to the 29th police station with his father.
+
+2022-11-30 09:52:42,176 [work           ] [INFO ]  replacing sample 40:
+ origin: Assault charges are being pursued against the 17 year-old.
+ sort: Assault charges are being pursued against the 16 year-old.
+
+2022-11-30 09:52:44,901 [work           ] [INFO ]  replacing sample 41:
+ origin: Report: Seehofer pushes for longer telecommunications data retention
+ sort: Reporting: Seehofer pushes for longer telecommunications data retention
+
+2022-11-30 09:52:47,513 [work           ] [INFO ]  replacing sample 42:
+ origin: Telecommunications data retention is currently suspended.
+ sort: Telecommunications data retention is currently suspended
+
+2022-11-30 09:52:54,507 [work           ] [INFO ]  replacing sample 43:
+ origin: However, Federal Minister of the Interior Horst Seehofer is pushing for a lengthening of the retention period according to a press report.
+ sort: Nevertheless, Federal Minister of the Interior Horst Seehofer is pushing for a lengthening of the retention period according a press report.
+
+2022-11-30 09:52:57,613 [work           ] [INFO ]  replacing sample 44:
+ origin: He would like to support thereby the fight against child abuse.
+ sort: She would like to support thereby the fight against child abuse.
+
+2022-11-30 09:53:18,730 [work           ] [INFO ]  replacing sample 45:
+ origin: According to a media report, Federal Minster of the Interior Horst Seehofer (CSU) is pushing for a longer data retention period: a half-year instead of the current ten weeks.
+ sort:  According to a media report, Federal Minster of the Interior Horst Seehofer (CSU) is pushing for a longer data retention time: a half-year instead of the existing twelve weeks.
+
+2022-11-30 09:53:32,595 [work           ] [INFO ]  replacing sample 46:
+ origin: As reported by the "Bild am Sonntag", Seehofer asked the Minister of Justice Christine Lambrecht (SPD) in a letter for an express change to the law.
+ sort: When reported in the "Bild am Sonntag", Seehofer asked the Minister of Justice Caroline Lambrecht (SPD) in a letter for an express change to the law.
+
+2022-11-30 09:53:35,448 [work           ] [INFO ]  replacing sample 47:
+ origin: Seehofer wants to strengthen provisions against child abuse thereby.
+ sort: Seehofer desires to strengthen provisions against child abuse thereby.
+
+2022-11-30 09:53:48,047 [work           ] [INFO ]  replacing sample 48:
+ origin: He thinks that it makes sense "to take up pressing, necessary alterations to the law now," the newspaper quoted from his release.
+ sort: They believes that it makes sense "to take up pressing, necessary alterations to the law now", the newspaper quoted from his release.
+
+2022-11-30 09:53:50,812 [work           ] [INFO ]  replacing sample 49:
+ origin: Telecommunications data retention is suspended at the moment.
+ sort: Telecommunications data retention is suspended at the moment
+
+2022-11-30 09:53:53,617 [work           ] [INFO ]  replacing sample 50:
+ origin: This is waiting on a decision from the EuGH.
+ sort: These is waiting on a decision from the EuGH.
