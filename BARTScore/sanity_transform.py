@@ -339,6 +339,50 @@ def sanity_transform(args, hypo, mode, src_line = None, idx = None, transform_d 
             #else: print(tt, ' ')
         hypo_new = ' '.join(dd_hypo)
 
+    if mode.startswith('article'):
+        words = ['a', 'an', 'A', 'An']
+        replace = {}
+        for i in range(len(words)):
+            replace[words[i]] = words[i ^ 1]
+        dd_hypo = []
+        for tt in hypo.split(' '):
+            #if (tt in [',', '.']) or (not (tt in dd_hypo and tt in ['a', 'the', 'an', 'and'])):
+            if tt in words:
+                dd_hypo.append(replace[tt])
+            else:
+                dd_hypo.append(tt)
+            #else: print(tt, ' ')
+        hypo_new = ' '.join(dd_hypo)
+
+    if mode.startswith('weekday'):
+        words = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+        replace = {}
+        for i in range(len(words) - 1):
+            replace[words[i]] = words[i + 1]
+        replace['Friday'] = 'Thursday'
+        replace['Sunday'] = 'Saterday'
+        replace['Saterday'] = 'Sunday'
+        dd_hypo = []
+        for tt in hypo.split(' '):
+            if tt in words:
+                dd_hypo.append(replace[tt])
+            else:
+                dd_hypo.append(tt)
+        hypo_new = ' '.join(dd_hypo)
+
+    if mode.startswith('pronoun'):
+        words = ['he', 'she', 'it', 'they']
+        words2 = ['He', 'She', 'It', 'They']
+        dd_hypo = []
+        for tt in hypo.split(' '):
+            if tt in words:
+                dd_hypo.append(words[random.randint(0,3)])
+            elif tt in words2:
+                dd_hypo.append(words2[random.randint(0,3)])
+            else:
+                dd_hypo.append(tt)
+        hypo_new = ' '.join(dd_hypo)
+
     if args.debug_transform and idx <= 20:
         logger.info('idx: %d, hypo    : %s', idx, hypo)
         logger.info('idx: %d, hypo_new: %s', idx, hypo_new)

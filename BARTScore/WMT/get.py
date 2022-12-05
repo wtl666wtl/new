@@ -70,10 +70,11 @@ class Attacker:
             if sn != 'src':
                 self.data[sn] = batch_preprocess(self.data[sn])
 
-        key = 2
+        key = 38
         data['src'] = [data['src'][key]]
         data['ref-A'] = [data['ref-A'][key]]
         data['ref-B'] = [data['ref-B'][key]]
+        print(data['ref-A'])
 
         self.srcs = data['src']
         # ref-B is the reference
@@ -90,8 +91,7 @@ class Attacker:
         transform_d = {'refs': self.refs, 'src': self.srcs}
 
         self.data["sort"] = []
-        self.data["sort"].append("An traffic accident occurred on Friday evening on the country road between Machtolsheim and Merklingen where a bike rider was only slightly injured thanks to his quick reaction.")
-
+        self.data["sort"].append("This resulted in the young person slipping over the edge of the platform and falling onto the track.")
         logger.info('sys_names: %s', str(sys_names))
 
 
