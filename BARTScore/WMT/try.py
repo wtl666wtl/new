@@ -495,10 +495,10 @@ class Attacker:
                 id, new_w, min_dis = waiting_list[final_index]
                 if new_w == '<delete>':
                     for rid in range(id, len(tokenized_text)):
-                        if flag.get(id) == 1453:
-                            flag[id] = 0
+                        if flag.get(rid) == 1453:
+                            flag[rid] = 0
                             if rid != id:
-                                flag[id-1] = 1453
+                                flag[rid-1] = 1453
                     tokenized_text = tokenized_text[:id] + tokenized_text[id+1:]
                     num -= 1
                     break
