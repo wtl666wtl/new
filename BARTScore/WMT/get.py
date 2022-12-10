@@ -91,7 +91,7 @@ class Attacker:
         transform_d = {'refs': self.refs, 'src': self.srcs}
 
         self.data["sort"] = []
-        self.data["sort"].append("This resulted in the young person slipping over the edge of the platform and falling onto the track.")
+        self.data["sort"].append("They thinks that it makes sense \"to take up pressing, necessary alterations to the law now,\" the newspaper quoted from his release.")
         logger.info('sys_names: %s', str(sys_names))
 
 

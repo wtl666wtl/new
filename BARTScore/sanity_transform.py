@@ -354,6 +354,39 @@ def sanity_transform(args, hypo, mode, src_line = None, idx = None, transform_d 
             #else: print(tt, ' ')
         hypo_new = ' '.join(dd_hypo)
 
+    if mode.startswith('this_these'):
+        words = ['this', 'these', 'This', 'These']
+        replace = {}
+        for i in range(len(words)):
+            replace[words[i]] = words[i ^ 1]
+        dd_hypo = []
+        for tt in hypo.split(' '):
+            #if (tt in [',', '.']) or (not (tt in dd_hypo and tt in ['a', 'the', 'an', 'and'])):
+            if tt in words:
+                dd_hypo.append(replace[tt])
+            else:
+                dd_hypo.append(tt)
+            #else: print(tt, ' ')
+        hypo_new = ' '.join(dd_hypo)
+
+    if mode.startswith('number'):
+        words = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen']
+        words_2 = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen']
+        replace = {}
+        for i in range(len(words)-1):
+            replace[words[i]] = words[i + 1]
+        for i in range(len(words_2)-1):
+            replace[words[i]] = words[i + 1]
+        dd_hypo = []
+        for tt in hypo.split(' '):
+            #if (tt in [',', '.']) or (not (tt in dd_hypo and tt in ['a', 'the', 'an', 'and'])):
+            if tt in words:
+                dd_hypo.append(replace[tt])
+            else:
+                dd_hypo.append(tt)
+            #else: print(tt, ' ')
+        hypo_new = ' '.join(dd_hypo)
+
     if mode.startswith('weekday'):
         words = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
         replace = {}
